@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0d1117" />
+  <title>Démarrage rapide</title>
+
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+
+<body>
+  <div class="fond" id="fond"></div>
+  <div class="voile"></div>
+
+  <main class="wrap">
+    <div class="grille">
+
+      <!-- Bloc principal -->
+      <section class="panneau">
+        <header class="entete">
+          <div class="titre">Recherche</div>
+          <div class="badge" id="etat-meteo">Météo : en attente</div>
+        </header>
+
+        <div class="contenu">
+          <div class="horloge" id="horloge">--:--:--</div>
+          <div class="date" id="date">—</div>
+
+          <div class="meteo">
+            <div>
+              <div class="meteo-titre" id="meteo-titre">Météo non chargée</div>
+              <div class="meteo-detail" id="meteo-detail">Autorisez la géolocalisation ou indiquez une ville.</div>
+            </div>
+            <div class="badge" id="meteo-temp">--°C</div>
+          </div>
+
+          <div class="recherche-ligne">
+            <input class="champ" id="q" type="text" placeholder="Rechercher…" autocomplete="off" />
+            <select class="liste" id="moteur" title="Moteur de recherche">
+              <option value="qwant">Qwant</option>
+              <option value="duckduckgo">DuckDuckGo</option>
+              <option value="google">Google</option>
+            </select>
+            <select class="liste" id="ouverture" title="Ouverture">
+              <option value="_self">Onglet actuel</option>
+              <option value="_blank">Nouvel onglet</option>
+            </select>
+            <button class="bouton" id="lancer">Lancer</button>
+          </div>
+
+          <p class="aide">
+            Note : une page Web ne peut pas imposer Chrome/Firefox/Edge. Choisissez le navigateur en définissant cette page comme page d’accueil dans le navigateur souhaité.
+          </p>
+
+          <div class="sep"></div>
+
+          <div class="label">Favoris</div>
+          <div class="favoris-grille" id="favoris-grille"></div>
+
+          <div class="sep"></div>
+
+          <div class="ligne">
+            <input class="champ" id="favori-nom" type="text" placeholder="Nom du favori (ex : Messagerie)" />
+            <input class="champ" id="favori-url" type="url" placeholder="Adresse (ex : https://exemple.fr)" />
+            <button class="bouton" id="favori-ajouter">Ajouter</button>
+          </div>
+
+          <p class="mini">
+            Les favoris, le fond d’écran et les réglages sont enregistrés dans le navigateur (stockage local).
+          </p>
+        </div>
+      </section>
+
+      <!-- Bloc réglages -->
+      <aside class="panneau">
+        <header class="entete">
+          <div class="titre">Réglages</div>
+          <div class="badge">Local</div>
+        </header>
+
+        <div class="contenu">
+          <div class="label">Fond d’écran</div>
+          <div class="ligne">
+            <input class="champ" id="fond-fichier" type="file" accept="image/*" />
+            <button class="bouton danger" id="fond-reset">Réinitialiser</button>
+          </div>
+
+          <div class="sep"></div>
+
+          <div class="label">Météo</div>
+          <div class="ligne">
+            <input class="champ" id="ville" type="text" placeholder="Ville (ex : Paris)" />
+            <button class="bouton" id="ville-enregistrer">Utiliser cette ville</button>
+          </div>
+          <p class="mini">
+            Si la géolocalisation est refusée, la ville sert de référence.
+          </p>
+
+          <div class="sep"></div>
+
+          <div class="label">Divers</div>
+          <div class="ligne">
+            <button class="bouton danger" id="tout-reset">Réinitialiser tout</button>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- JS : chargement rapide (defer) -->
+  <script defer src="./js/stockage.js"></script>
+  <script defer src="./js/horloge.js"></script>
+  <script defer src="./js/meteo.js"></script>
+  <script defer src="./js/app.js"></script>
+
+  <!-- Service Worker : cache pour démarrage rapide -->
+  <script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(() => {});
+  }
+</script>
+</body>
+</html>
