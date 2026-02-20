@@ -1,4 +1,4 @@
-# Démarrage rapide navigateur
+# Démarrage rapide navigateur 
 
 Page d’accueil de navigateur légère et rapide, conçue pour un chargement instantané.
 

@@ -17,17 +17,10 @@
   <main class="wrap">
     <div class="grille">
       <section class="panneau panneau-principal">
-        <header class="entete">
-          <div class="titre">Accueil</div>
-          <button class="hamburger" id="favoris-menu-btn" type="button" aria-expanded="false" aria-controls="favoris-menu">☰ Favoris</button>
-        </header>
-
         <div class="contenu">
-          <div class="horloge" id="horloge">--:--:--</div>
-          <div class="date" id="date">—</div>
-
-          <div class="meteo-iframe">
-            <iframe id="widget_autocomplete_preview" width="150" height="300" frameborder="0" src="https://meteofrance.com/widget/prevision/930610##3D6AA2" title="Prévisions Le Pré-Saint-Gervais par Météo-France"></iframe>
+          <div class="ligne-temps">
+            <div class="horloge" id="horloge">--:--:--</div>
+            <div class="date" id="date">—</div>
           </div>
 
           <div class="recherche-ligne">
@@ -36,8 +29,9 @@
               <option value="qwant">Qwant</option>
               <option value="duckduckgo">DuckDuckGo</option>
               <option value="google">Google</option>
+              <option value="bing">Bing</option>
             </select>
-            <button class="bouton" id="lancer">Lancer</button>
+            <button class="bouton" id="lancer">Chercher</button>
           </div>
 
           <div class="sep"></div>
@@ -47,13 +41,8 @@
       </section>
 
       <aside class="panneau panneau-secondaire">
-        <header class="entete">
-          <div class="titre">Réglages</div>
-          <button class="hamburger" id="reglages-menu-btn" type="button" aria-expanded="false" aria-controls="reglages-menu">☰ Menu</button>
-        </header>
-
         <div class="contenu">
-          <p class="mini">Utilisez le menu pour gérer les favoris et les réglages.</p>
+          <iframe id="widget_autocomplete_preview" frameborder="0" src="https://meteofrance.com/widget/prevision/930610##3D6AA2" title="Prévisions Le Pré-Saint-Gervais par Météo-France"></iframe>
         </div>
       </aside>
     </div>
@@ -80,6 +69,7 @@
     <div class="label">Fond d’écran</div>
     <div class="ligne">
       <input class="champ" id="fond-fichier" type="file" accept="image/*" />
+      <button class="bouton" id="fond-aleatoire" type="button">Fond aléatoire</button>
       <button class="bouton danger" id="fond-reset">Réinitialiser</button>
     </div>
     <div class="sep"></div>
@@ -97,5 +87,7 @@
       navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(() => {});
     }
   </script>
+
+  <a class="btn-roue" href="./gestion.html" title="Ouvrir la page de gestion">⚙</a>
 </body>
 </html>

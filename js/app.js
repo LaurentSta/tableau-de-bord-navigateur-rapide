@@ -13,6 +13,7 @@
 
   const fondFichier = document.getElementById("fond-fichier");
   const fondReset = document.getElementById("fond-reset");
+  const fondAleatoire = document.getElementById("fond-aleatoire");
   const toutReset = document.getElementById("tout-reset");
 
   const favorisMenu = document.getElementById("favoris-menu");
@@ -88,10 +89,35 @@
     if (fondFichier) fondFichier.value = "";
   });
 
+  async function chargerFondAleatoire(){
+    const btn = fondAleatoire;
+    const texteOriginal = btn?.textContent;
+    try{
+      if(btn){ btn.textContent = "Chargement…"; btn.disabled = true; }
+      const resp = await fetch(`https://picsum.photos/1600/900?random=${Date.now()}`, { cache: "no-store", mode: "cors" });
+      const blob = await resp.blob();
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result;
+        window.Stockage.set("fond", dataUrl);
+        appliquerFond(dataUrl);
+        if(btn){ btn.textContent = texteOriginal || "Fond aléatoire"; btn.disabled = false; }
+      };
+      reader.onerror = () => { throw new Error("Lecture impossible"); };
+      reader.readAsDataURL(blob);
+    }catch(err){
+      if(btn){ btn.textContent = "Erreur"; setTimeout(()=>{ btn.textContent = texteOriginal || "Fond aléatoire"; btn.disabled = false; }, 1400); }
+      console.error(err);
+    }
+  }
+
+  fondAleatoire?.addEventListener("click", chargerFondAleatoire);
+
   const URL_MOTEUR = {
     qwant: (texte) => `https://www.qwant.com/?q=${encodeURIComponent(texte)}&t=web`,
     duckduckgo: (texte) => `https://duckduckgo.com/?q=${encodeURIComponent(texte)}`,
-    google: (texte) => `https://www.google.com/search?q=${encodeURIComponent(texte)}`
+    google: (texte) => `https://www.google.com/search?q=${encodeURIComponent(texte)}`,
+    bing: (texte) => `https://www.bing.com/search?q=${encodeURIComponent(texte)}`
   };
 
   function faireRecherche(){
@@ -127,11 +153,20 @@
         a.rel = "noopener";
         a.title = f.nom || f.url;
 
+        const cadre = document.createElement("div");
+        cadre.className = "favori-cadre";
+
         const img = document.createElement("img");
         img.alt = f.nom || "Favori";
         img.src = urlFavicon(f.url);
+        cadre.appendChild(img);
 
-        a.appendChild(img);
+        const nomElt = document.createElement("div");
+        nomElt.className = "favori-nom-bref";
+        nomElt.textContent = (f.nom || domaineDepuisUrl(f.url) || "Favori").slice(0, 18);
+
+        a.appendChild(cadre);
+        a.appendChild(nomElt);
         favorisGrille.appendChild(a);
       }
 

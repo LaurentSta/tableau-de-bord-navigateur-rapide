@@ -1,6 +1,6 @@
 const NOM_CACHE = "tableau-bord-v2";
 
-const FICHIERS = [
+const FICHIERS = [ 
   "./",
   "./index.html",
   "./gestion.html",
