@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0d1117" />
+  <title>Gestion - Démarrage rapide</title>
+
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <div class="fond" id="fond"></div>
+  <div class="voile"></div>
+
+  <main class="wrap">
+    <section class="panneau panneau-gestion">
+      <div class="contenu">
+        <div class="ligne ligne-titre">
+          <h1 class="titre-page">Gestion favoris & fond d’écran</h1>
+          <a class="bouton" href="./index.html">Retour accueil</a>
+        </div>
+
+        <div class="drawer-section">
+          <div class="label">Favoris</div>
+          <div class="favoris-liste" id="favoris-liste"></div>
+          <div class="ligne">
+            <input class="champ" id="favori-nom" type="text" placeholder="Nom du favori" />
+            <input class="champ" id="favori-url" type="url" placeholder="Adresse (https://...)" />
+            <button class="bouton" id="favori-ajouter">Ajouter</button>
+          </div>
+        </div>
+
+        <div class="drawer-section">
+          <div class="label">Fond d’écran</div>
+          <div class="ligne">
+            <input class="champ" id="fond-fichier" type="file" accept="image/*" />
+            <button class="bouton danger" id="fond-reset">Réinitialiser le fond</button>
+          </div>
+        </div>
+
+        <div class="drawer-section">
+          <button class="bouton danger" id="tout-reset">Réinitialiser tout</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script defer src="./js/stockage.js"></script>
+  <script defer src="./js/app.js"></script>
+</body>
+</html>

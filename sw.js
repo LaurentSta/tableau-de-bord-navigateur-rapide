@@ -1,12 +1,12 @@
-const NOM_CACHE = "tableau-bord-v1";
+const NOM_CACHE = "tableau-bord-v2";
 
 const FICHIERS = [
   "./",
   "./index.html",
+  "./gestion.html",
   "./css/style.css",
   "./js/stockage.js",
   "./js/horloge.js",
-  "./js/meteo.js",
   "./js/app.js",
   "./manifest.json"
 ];
