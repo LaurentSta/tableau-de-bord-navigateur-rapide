@@ -1,39 +1,32 @@
 (function(){
-  // ---------- Références DOM
   const fond = document.getElementById("fond");
 
   const q = document.getElementById("q");
   const moteur = document.getElementById("moteur");
-  const ouverture = document.getElementById("ouverture");
   const lancer = document.getElementById("lancer");
 
   const favorisGrille = document.getElementById("favoris-grille");
+  const favorisListe = document.getElementById("favoris-liste");
   const favoriNom = document.getElementById("favori-nom");
   const favoriUrl = document.getElementById("favori-url");
   const favoriAjouter = document.getElementById("favori-ajouter");
 
   const fondFichier = document.getElementById("fond-fichier");
   const fondReset = document.getElementById("fond-reset");
-
-  const ville = document.getElementById("ville");
-  const villeEnregistrer = document.getElementById("ville-enregistrer");
-
   const toutReset = document.getElementById("tout-reset");
 
-  // ---------- Données par défaut
   const FAVORIS_DEFAUT = [
     { nom: "Courriel", url: "https://mail.google.com/" },
-    { nom: "Moteur de recherche", url: "https://www.qwant.com/" },
+    { nom: "Qwant", url: "https://www.qwant.com/" },
     { nom: "Carte", url: "https://www.openstreetmap.org/" },
     { nom: "Actualités", url: "https://www.francetvinfo.fr/" }
   ];
 
-  // ---------- Utilitaires
   function normaliserUrl(u){
     if(!u) return "";
-    u = u.trim();
-    if(!/^https?:\/\//i.test(u)) u = "https://" + u;
-    return u;
+    const val = u.trim();
+    if(!/^https?:\/\//i.test(val)) return `https://${val}`;
+    return val;
   }
 
   function domaineDepuisUrl(u){
@@ -43,11 +36,9 @@
   function urlFavicon(siteUrl){
     const d = domaineDepuisUrl(siteUrl);
     if(!d) return "";
-    // Service externe : simple et efficace
     return `https://icons.duckduckgo.com/ip3/${encodeURIComponent(d)}.ico`;
   }
 
-  // ---------- Fond d’écran
   function appliquerFond(dataUrl){
     if(!fond) return;
     if(dataUrl){
@@ -62,30 +53,25 @@
 
   appliquerFond(window.Stockage.get("fond", null));
 
-  if (fondFichier) {
-    fondFichier.addEventListener("change", (e)=>{
-      const file = e.target.files && e.target.files[0];
-      if(!file) return;
+  fondFichier?.addEventListener("change", (e)=>{
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        const dataUrl = reader.result;
-        window.Stockage.set("fond", dataUrl);
-        appliquerFond(dataUrl);
-      };
-      reader.readAsDataURL(file);
-    });
-  }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result;
+      window.Stockage.set("fond", dataUrl);
+      appliquerFond(dataUrl);
+    };
+    reader.readAsDataURL(file);
+  });
 
-  if (fondReset) {
-    fondReset.addEventListener("click", ()=>{
-      window.Stockage.del("fond");
-      appliquerFond(null);
-      if (fondFichier) fondFichier.value = "";
-    });
-  }
+  fondReset?.addEventListener("click", ()=>{
+    window.Stockage.del("fond");
+    appliquerFond(null);
+    if (fondFichier) fondFichier.value = "";
+  });
 
-  // ---------- Recherche
   const URL_MOTEUR = {
     qwant: (texte) => `https://www.qwant.com/?q=${encodeURIComponent(texte)}&t=web`,
     duckduckgo: (texte) => `https://duckduckgo.com/?q=${encodeURIComponent(texte)}`,
@@ -96,22 +82,16 @@
     const texte = (q?.value || "").trim();
     if(!texte) return;
     const m = moteur?.value || "qwant";
-    const cible = ouverture?.value || "_self";
     const url = (URL_MOTEUR[m] || URL_MOTEUR.qwant)(texte);
-    window.open(url, cible);
+    window.location.href = url;
   }
 
-  if (lancer) lancer.addEventListener("click", faireRecherche);
-  if (q) q.addEventListener("keydown", (e)=>{ if(e.key === "Enter") faireRecherche(); });
+  lancer?.addEventListener("click", faireRecherche);
+  q?.addEventListener("keydown", (e)=>{ if(e.key === "Enter") faireRecherche(); });
 
-  // Préférences moteur/ouverture
   if (moteur) moteur.value = window.Stockage.get("moteur", "qwant");
-  if (ouverture) ouverture.value = window.Stockage.get("ouverture", "_self");
-
   moteur?.addEventListener("change", (e)=>window.Stockage.set("moteur", e.target.value));
-  ouverture?.addEventListener("change", (e)=>window.Stockage.set("ouverture", e.target.value));
 
-  // ---------- Favoris
   let favoris = window.Stockage.get("favoris", null);
   if(!Array.isArray(favoris) || favoris.length === 0){
     favoris = FAVORIS_DEFAUT;
@@ -119,85 +99,84 @@
   }
 
   function rendreFavoris(){
-    if(!favorisGrille) return;
-    favorisGrille.innerHTML = "";
+    if(favorisGrille) favorisGrille.innerHTML = "";
+    if(favorisListe) favorisListe.innerHTML = "";
 
     favoris.forEach((f, idx)=>{
-      const a = document.createElement("a");
-      a.className = "favori";
-      a.href = f.url;
-      a.target = "_blank";
-      a.rel = "noopener";
+      if(favorisGrille){
+        const a = document.createElement("a");
+        a.className = "favori";
+        a.href = f.url;
+        a.target = "_blank";
+        a.rel = "noopener";
 
-      const img = document.createElement("img");
-      img.alt = "";
-      img.src = urlFavicon(f.url);
+        const img = document.createElement("img");
+        img.alt = "";
+        img.src = urlFavicon(f.url);
 
-      const nom = document.createElement("div");
-      nom.className = "nom";
-      nom.textContent = f.nom || f.url;
+        const nom = document.createElement("div");
+        nom.className = "nom";
+        nom.textContent = f.nom || domaineDepuisUrl(f.url) || f.url;
 
-      const suppr = document.createElement("button");
-      suppr.className = "suppr";
-      suppr.type = "button";
-      suppr.textContent = "Suppr.";
-      suppr.addEventListener("click", (e)=>{
-        e.preventDefault();
-        e.stopPropagation();
-        favoris.splice(idx, 1);
-        window.Stockage.set("favoris", favoris);
-        rendreFavoris();
-      });
+        a.appendChild(img);
+        a.appendChild(nom);
+        favorisGrille.appendChild(a);
+      }
 
-      a.appendChild(img);
-      a.appendChild(nom);
-      a.appendChild(suppr);
-      favorisGrille.appendChild(a);
+      if(favorisListe){
+        const ligne = document.createElement("div");
+        ligne.className = "favori-ligne";
+
+        const img = document.createElement("img");
+        img.alt = "";
+        img.src = urlFavicon(f.url);
+
+        const nom = document.createElement("div");
+        nom.className = "favori-nom";
+        nom.textContent = `${f.nom || "Sans nom"} — ${f.url}`;
+
+        const suppr = document.createElement("button");
+        suppr.className = "bouton danger";
+        suppr.type = "button";
+        suppr.textContent = "Supprimer";
+        suppr.addEventListener("click", ()=>{
+          favoris.splice(idx, 1);
+          window.Stockage.set("favoris", favoris);
+          rendreFavoris();
+        });
+
+        ligne.appendChild(img);
+        ligne.appendChild(nom);
+        ligne.appendChild(suppr);
+        favorisListe.appendChild(ligne);
+      }
     });
   }
 
   rendreFavoris();
 
-  if (favoriAjouter) {
-    favoriAjouter.addEventListener("click", ()=>{
-      const nom = (favoriNom?.value || "").trim();
-      const url = normaliserUrl((favoriUrl?.value || "").trim());
-      if(!url) return;
+  favoriAjouter?.addEventListener("click", ()=>{
+    const nom = (favoriNom?.value || "").trim();
+    const url = normaliserUrl((favoriUrl?.value || "").trim());
+    if(!url) return;
 
-      // éviter doublon exact
-      if (favoris.some(x => (x.url||"").toLowerCase() === url.toLowerCase())) return;
+    if (favoris.some(x => (x.url||"").toLowerCase() === url.toLowerCase())) return;
 
-      favoris.unshift({
-        nom: nom || domaineDepuisUrl(url) || url,
-        url
-      });
-
-      window.Stockage.set("favoris", favoris);
-      if (favoriNom) favoriNom.value = "";
-      if (favoriUrl) favoriUrl.value = "";
-      rendreFavoris();
+    favoris.unshift({
+      nom: nom || domaineDepuisUrl(url) || url,
+      url
     });
-  }
 
-  // ---------- Ville météo
-  if (ville) ville.value = window.Stockage.get("ville", "");
+    window.Stockage.set("favoris", favoris);
+    if (favoriNom) favoriNom.value = "";
+    if (favoriUrl) favoriUrl.value = "";
+    rendreFavoris();
+  });
 
-  if (villeEnregistrer) {
-    villeEnregistrer.addEventListener("click", async ()=>{
-      const v = (ville?.value || "").trim();
-      if(!v) return;
-      window.Stockage.set("ville", v);
-      if (window.Meteo?.chargerMeteo) await window.Meteo.chargerMeteo();
-    });
-  }
-
-  // ---------- Réinitialisation
-  if (toutReset) {
-    toutReset.addEventListener("click", ()=>{
-      const ok = confirm("Réinitialiser favoris, fond d’écran et réglages ?");
-      if(!ok) return;
-      window.Stockage.clear();
-      location.reload();
-    });
-  }
+  toutReset?.addEventListener("click", ()=>{
+    const ok = confirm("Réinitialiser favoris, fond d’écran et réglages ?");
+    if(!ok) return;
+    window.Stockage.clear();
+    location.reload();
+  });
 })();
