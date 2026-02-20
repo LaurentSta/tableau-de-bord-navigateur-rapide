@@ -7,31 +7,42 @@
   <title>Démarrage rapide</title>
 
   <link rel="manifest" href="./manifest.json" />
-  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="stylesheet" href="./css/style.css?v=14" />
 </head>
 
 <body>
   <div class="fond" id="fond"></div>
   <div class="voile"></div>
+  <div class="barre-haute">
+    <div class="horloge" id="horloge">--:--:--</div>
+    <div class="date-actions">
+      <div class="date" id="date">—</div>
+      <a class="btn-agenda" href="https://calendar.google.com/calendar/u/0/r" target="_blank" rel="noopener" title="Ouvrir Google Agenda" aria-label="Ouvrir Google Agenda">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1Zm13 8H4v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9Z"></path>
+          <path d="M8 13.2a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Zm4 0a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Zm4 0a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Z"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
 
   <main class="wrap">
     <div class="grille">
       <section class="panneau panneau-principal">
         <div class="contenu">
-          <div class="ligne-temps">
-            <div class="horloge" id="horloge">--:--:--</div>
-            <div class="date" id="date">—</div>
-          </div>
-
           <div class="recherche-ligne">
             <input class="champ" id="q" type="text" placeholder="Rechercher…" autocomplete="off" />
-            <select class="liste" id="moteur" title="Moteur de recherche">
-              <option value="qwant">Qwant</option>
-              <option value="duckduckgo">DuckDuckGo</option>
-              <option value="google">Google</option>
-              <option value="bing">Bing</option>
-            </select>
-            <button class="bouton" id="lancer">Chercher</button>
+          </div>
+
+          <div class="moteurs-ligne" id="moteurs-ligne" aria-label="Choix du moteur de recherche">
+            <button class="moteur-btn" type="button" data-moteur="duckduckgo">DuckDuckGo</button>
+            <button class="moteur-btn" type="button" data-moteur="google">Google</button>
+            <button class="moteur-btn" type="button" data-moteur="qwant">Qwant</button>
+            <button class="moteur-btn" type="button" data-moteur="freepik">Freepik</button>
+            <button class="moteur-btn" type="button" data-moteur="pinterest">Pinterest</button>
+            <button class="moteur-btn" type="button" data-moteur="amazon">Amazon</button>
+            <button class="moteur-btn" type="button" data-moteur="yahoo">Yahoo</button>
+            <button class="moteur-btn" type="button" data-moteur="bing">Bing</button>
           </div>
 
           <div class="sep"></div>
@@ -39,12 +50,6 @@
           <div class="favoris-grille" id="favoris-grille"></div>
         </div>
       </section>
-
-      <aside class="panneau panneau-secondaire">
-        <div class="contenu">
-          <iframe id="widget_autocomplete_preview" frameborder="0" src="https://meteofrance.com/widget/prevision/930610##3D6AA2" title="Prévisions Le Pré-Saint-Gervais par Météo-France"></iframe>
-        </div>
-      </aside>
     </div>
   </main>
 
@@ -66,21 +71,13 @@
       <div class="titre">Réglages</div>
       <button class="bouton" id="reglages-menu-fermer" type="button">Fermer</button>
     </div>
-    <div class="label">Fond d’écran</div>
-    <div class="ligne">
-      <input class="champ" id="fond-fichier" type="file" accept="image/*" />
-      <button class="bouton" id="fond-aleatoire" type="button">Fond aléatoire</button>
-      <button class="bouton danger" id="fond-reset">Réinitialiser</button>
-    </div>
+    <div class="label">Fond d’écran Wallhaven automatique (nouvelle image à chaque ouverture)</div>
     <div class="sep"></div>
-    <div class="ligne">
-      <button class="bouton danger" id="tout-reset">Réinitialiser tout</button>
-    </div>
   </div>
 
-  <script defer src="./js/stockage.js"></script>
-  <script defer src="./js/horloge.js"></script>
-  <script defer src="./js/app.js"></script>
+  <script defer src="./js/stockage.js?v=14"></script>
+  <script defer src="./js/horloge.js?v=14"></script>
+  <script defer src="./js/app.js?v=14"></script>
 
   <script>
     if ("serviceWorker" in navigator) {

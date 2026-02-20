@@ -1,4 +1,4 @@
-const NOM_CACHE = "tableau-bord-v2";
+const NOM_CACHE = "tableau-bord-v15";
 
 const FICHIERS = [ 
   "./",

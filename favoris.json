@@ -1,0 +1,29 @@
+[
+  { "nom": "Gmail", "url": "https://mail.google.com" },
+  { "nom": "Notion", "url": "https://www.notion.so" },
+    { "nom": "Oneduc Prod", "url": "https://oneduc.fr/" },
+  { "nom": "Oneduc Dev", "url": "http://192.168.189.129:8000/" },
+{ "nom": "Github", "url": "https://github.com/LaurentSta" },
+  { "nom": "ChatGPT", "url": "https://chat.openai.com" },
+  { "nom": "Gemini", "url": "https://gemini.google.com" },
+  { "nom": "Sora", "url": "https://sora.chatgpt.com/library" },
+  { "nom": "NotebookLM", "url": "https://notebooklm.google/" },
+
+  { "nom": "Epie Formation", "url": "https://epie-formation.net" },
+  { "nom": "Université Moodle", "url": "https://apprenance-formation.org/moodle/course/index.php?categoryid=16" },
+
+  { "nom": "Freebox", "url": "http://192.168.1.254/" },
+  { "nom": "NetData", "url": "http://192.168.1.18:19999/" },
+  { "nom": "Transmission", "url": "http://192.168.1.18:9091/transmission/web/" },
+
+  { "nom": "Plex", "url": "https://watch.plex.tv/fr/me" },
+  { "nom": "YouTube", "url": "https://www.youtube.com" },
+  { "nom": "Sens Critique", "url": "https://www.senscritique.com" },
+  { "nom": "Yggtorrent", "url": "https://www.yggtorrent.org/" },
+  { "nom": "Pinterest", "url": "https://fr.pinterest.com/" },
+{ "nom": "Plaud", "url": "https://web.plaud.ai/" },
+  { "nom": "Amazon", "url": "https://www.amazon.fr" },
+  { "nom": "IONOS", "url": "https://www.ionos.fr/" },
+  { "nom": "France Travail", "url": "https://www.francetravail.fr/accueil/" },
+  { "nom": "Freepiks", "url": "https://fr.freepik.com/app" }
+]

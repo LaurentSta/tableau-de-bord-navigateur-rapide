@@ -2,8 +2,7 @@
   const fond = document.getElementById("fond");
 
   const q = document.getElementById("q");
-  const moteur = document.getElementById("moteur");
-  const lancer = document.getElementById("lancer");
+  const moteurBtns = Array.from(document.querySelectorAll(".moteur-btn"));
 
   const favorisGrille = document.getElementById("favoris-grille");
   const favorisListe = document.getElementById("favoris-liste");
@@ -11,10 +10,6 @@
   const favoriUrl = document.getElementById("favori-url");
   const favoriAjouter = document.getElementById("favori-ajouter");
 
-  const fondFichier = document.getElementById("fond-fichier");
-  const fondReset = document.getElementById("fond-reset");
-  const fondAleatoire = document.getElementById("fond-aleatoire");
-  const toutReset = document.getElementById("tout-reset");
 
   const favorisMenu = document.getElementById("favoris-menu");
   const favorisMenuBtn = document.getElementById("favoris-menu-btn");
@@ -60,6 +55,30 @@
     }
   }
 
+  async function chargerFondAleatoire(){
+    try{
+      const themes = ["nature", "mountains", "forest", "landscape", "space"];
+      const theme = themes[Math.floor(Math.random() * themes.length)];
+      const page = Math.floor(Math.random() * 5) + 1;
+      const api = `https://wallhaven.cc/api/v1/search?q=${encodeURIComponent(theme)}&purity=100&sorting=random&atleast=1920x1080&page=${page}`;
+      const resp = await fetch(api, { cache: "no-store" });
+      if(!resp.ok) throw new Error(`Wallhaven HTTP ${resp.status}`);
+      const payload = await resp.json();
+      const items = Array.isArray(payload?.data) ? payload.data : [];
+      if(!items.length) throw new Error("Wallhaven vide");
+      const pick = items[Math.floor(Math.random() * items.length)];
+      const image = pick?.path;
+      if(!image) throw new Error("Wallhaven sans image");
+      window.Stockage.set("fond", image);
+      appliquerFond(image);
+      return;
+    }catch(_e){
+      const fallback = `https://picsum.photos/1920/1080?random=${Date.now()}`;
+      window.Stockage.set("fond", fallback);
+      appliquerFond(fallback);
+    }
+  }
+
   function toggleMenu(menu, btn, forceOpen){
     if(!menu || !btn) return;
     const shouldOpen = typeof forceOpen === "boolean" ? forceOpen : !menu.classList.contains("ouvert");
@@ -68,77 +87,91 @@
     btn.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
   }
 
-  appliquerFond(window.Stockage.get("fond", null));
-
-  fondFichier?.addEventListener("change", (e)=>{
-    const file = e.target.files && e.target.files[0];
-    if(!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result;
-      window.Stockage.set("fond", dataUrl);
-      appliquerFond(dataUrl);
-    };
-    reader.readAsDataURL(file);
-  });
-
-  fondReset?.addEventListener("click", ()=>{
-    window.Stockage.del("fond");
-    appliquerFond(null);
-    if (fondFichier) fondFichier.value = "";
-  });
-
-  async function chargerFondAleatoire(){
-    const btn = fondAleatoire;
-    const texteOriginal = btn?.textContent;
-    try{
-      if(btn){ btn.textContent = "Chargement…"; btn.disabled = true; }
-      const resp = await fetch(`https://picsum.photos/1600/900?random=${Date.now()}`, { cache: "no-store", mode: "cors" });
-      const blob = await resp.blob();
-      const reader = new FileReader();
-      reader.onload = () => {
-        const dataUrl = reader.result;
-        window.Stockage.set("fond", dataUrl);
-        appliquerFond(dataUrl);
-        if(btn){ btn.textContent = texteOriginal || "Fond aléatoire"; btn.disabled = false; }
-      };
-      reader.onerror = () => { throw new Error("Lecture impossible"); };
-      reader.readAsDataURL(blob);
-    }catch(err){
-      if(btn){ btn.textContent = "Erreur"; setTimeout(()=>{ btn.textContent = texteOriginal || "Fond aléatoire"; btn.disabled = false; }, 1400); }
-      console.error(err);
-    }
-  }
-
-  fondAleatoire?.addEventListener("click", chargerFondAleatoire);
+  chargerFondAleatoire();
 
   const URL_MOTEUR = {
     qwant: (texte) => `https://www.qwant.com/?q=${encodeURIComponent(texte)}&t=web`,
     duckduckgo: (texte) => `https://duckduckgo.com/?q=${encodeURIComponent(texte)}`,
     google: (texte) => `https://www.google.com/search?q=${encodeURIComponent(texte)}`,
+    freepik: (texte) => `https://www.freepik.com/search?format=search&query=${encodeURIComponent(texte)}`,
+    pinterest: (texte) => `https://www.pinterest.com/search/pins/?q=${encodeURIComponent(texte)}`,
+    amazon: (texte) => `https://www.amazon.fr/s?k=${encodeURIComponent(texte)}`,
+    yahoo: (texte) => `https://search.yahoo.com/search?p=${encodeURIComponent(texte)}`,
     bing: (texte) => `https://www.bing.com/search?q=${encodeURIComponent(texte)}`
   };
+
+  let moteurActif = window.Stockage.get("moteur", "qwant");
+
+  function appliquerMoteur(m){
+    if(!URL_MOTEUR[m]) m = "qwant";
+    moteurActif = m;
+    window.Stockage.set("moteur", m);
+    moteurBtns.forEach((btn)=>{
+      const actif = btn.dataset.moteur === m;
+      btn.classList.toggle("actif", actif);
+      btn.setAttribute("aria-pressed", actif ? "true" : "false");
+    });
+  }
 
   function faireRecherche(){
     const texte = (q?.value || "").trim();
     if(!texte) return;
-    const m = moteur?.value || "qwant";
-    const url = (URL_MOTEUR[m] || URL_MOTEUR.qwant)(texte);
+    const url = (URL_MOTEUR[moteurActif] || URL_MOTEUR.qwant)(texte);
     window.location.href = url;
   }
 
-  lancer?.addEventListener("click", faireRecherche);
   q?.addEventListener("keydown", (e)=>{ if(e.key === "Enter") faireRecherche(); });
+  moteurBtns.forEach((btn)=>{
+    btn.addEventListener("click", ()=>{
+      appliquerMoteur(btn.dataset.moteur);
+      if ((q?.value || "").trim()) faireRecherche();
+      else q?.focus();
+    });
+  });
+  appliquerMoteur(moteurActif);
 
-  if (moteur) moteur.value = window.Stockage.get("moteur", "qwant");
-  moteur?.addEventListener("change", (e)=>window.Stockage.set("moteur", e.target.value));
+let favoris = [];
 
-  let favoris = window.Stockage.get("favoris", null);
-  if(!Array.isArray(favoris) || favoris.length === 0){
+async function chargerFavorisDepuisFichier() {
+  try {
+    const resp = await fetch("favoris.json", { cache: "no-store" });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+
+    if (!Array.isArray(data)) throw new Error("Format favoris.json invalide (liste attendue).");
+
+    // Nettoyage minimal
+    const nettoyes = data
+      .filter(x => x && typeof x === "object")
+      .map(x => ({
+        nom: (x.nom || "").toString().trim(),
+        url: normaliserUrl((x.url || "").toString().trim())
+      }))
+      .filter(x => x.url);
+
+    if (nettoyes.length === 0) throw new Error("favoris.json vide.");
+
+    favoris = nettoyes;
+    window.Stockage.set("favoris", favoris); // copie dans le stockage local
+    rendreFavoris();
+    return;
+  } catch (err) {
+    console.warn("Chargement favoris.json impossible, fallback stockage local.", err);
+  }
+
+  // Fallback : localStorage puis défaut
+  const local = window.Stockage.get("favoris", null);
+  if (Array.isArray(local) && local.length) {
+    favoris = local;
+  } else {
     favoris = FAVORIS_DEFAUT;
     window.Stockage.set("favoris", favoris);
   }
+  rendreFavoris();
+}
+
+// Appeler à la place du chargement direct
+chargerFavorisDepuisFichier();
 
   function rendreFavoris(){
     if(favorisGrille) favorisGrille.innerHTML = "";
@@ -213,13 +246,6 @@
     if (favoriNom) favoriNom.value = "";
     if (favoriUrl) favoriUrl.value = "";
     rendreFavoris();
-  });
-
-  toutReset?.addEventListener("click", ()=>{
-    const ok = confirm("Réinitialiser favoris, fond d’écran et réglages ?");
-    if(!ok) return;
-    window.Stockage.clear();
-    location.reload();
   });
 
   favorisMenuBtn?.addEventListener("click", ()=>toggleMenu(favorisMenu, favorisMenuBtn));
