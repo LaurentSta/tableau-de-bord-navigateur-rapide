@@ -44,10 +44,12 @@
       const t = cur.temperature_2m;
       const w = cur.wind_speed_10m;
       const c = cur.weather_code;
+      const vent = Number.isFinite(w) ? `${Math.round(w)} km/h` : "n/d";
+      const temperature = Number.isFinite(t) ? `${Math.round(t)}°C` : "--°C";
 
       if (titre()) titre().textContent = libelle ? `Météo – ${libelle}` : "Météo";
-      if (detail()) detail().textContent = `${codeMeteo(c)} · Vent ${Math.round(w)} km/h`;
-      if (temp()) temp().textContent = `${Math.round(t)}°C`;
+      if (detail()) detail().textContent = `${codeMeteo(c)} · Vent ${vent}`;
+      if (temp()) temp().textContent = temperature;
       if (etat()) etat().textContent = "Météo : ok";
     }catch{
       if (etat()) etat().textContent = "Météo : erreur";
@@ -69,32 +71,40 @@
   }
 
   async function chargerMeteo(){
+    async function chargerVilleEnSecours(){
+      const ville = window.Stockage?.get("ville", "") || "";
+      if (!ville) return false;
+
+      try {
+        const g = await geocodeCity(ville);
+        await fetchWeather(g.lat, g.lon, g.libelle);
+        return true;
+      } catch {
+        if (etat()) etat().textContent = "Météo : ville invalide";
+        if (titre()) titre().textContent = "Météo non chargée";
+        if (detail()) detail().textContent = "Indiquez une ville valide.";
+        if (temp()) temp().textContent = "--°C";
+        return false;
+      }
+    }
+
     // 1) Géolocalisation si possible
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async (pos)=>{
         await fetchWeather(pos.coords.latitude, pos.coords.longitude, "Votre position");
       }, async ()=>{
         // 2) Sinon : ville enregistrée
-        const ville = window.Stockage?.get("ville", "") || "";
-        if (ville) {
-          try{
-            const g = await geocodeCity(ville);
-            await fetchWeather(g.lat, g.lon, g.libelle);
-          }catch{
-            if (etat()) etat().textContent = "Météo : ville invalide";
-            if (titre()) titre().textContent = "Météo non chargée";
-            if (detail()) detail().textContent = "Indiquez une ville valide.";
-            if (temp()) temp().textContent = "--°C";
-          }
-        } else {
+        const ok = await chargerVilleEnSecours();
+        if (!ok) {
           if (etat()) etat().textContent = "Météo : géolocalisation refusée";
         }
-      }, { timeout: 7000 });
+      }, { timeout: 7000, maximumAge: 5 * 60 * 1000, enableHighAccuracy: false });
       return;
     }
 
     // 3) Géolocalisation indisponible
-    if (etat()) etat().textContent = "Météo : géolocalisation indisponible";
+    const ok = await chargerVilleEnSecours();
+    if (!ok && etat()) etat().textContent = "Météo : géolocalisation indisponible";
   }
 
   // Expose pour app.js
