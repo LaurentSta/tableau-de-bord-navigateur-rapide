@@ -15,6 +15,14 @@
   const fondReset = document.getElementById("fond-reset");
   const toutReset = document.getElementById("tout-reset");
 
+  const favorisMenu = document.getElementById("favoris-menu");
+  const favorisMenuBtn = document.getElementById("favoris-menu-btn");
+  const favorisMenuFermer = document.getElementById("favoris-menu-fermer");
+
+  const reglagesMenu = document.getElementById("reglages-menu");
+  const reglagesMenuBtn = document.getElementById("reglages-menu-btn");
+  const reglagesMenuFermer = document.getElementById("reglages-menu-fermer");
+
   const FAVORIS_DEFAUT = [
     { nom: "Courriel", url: "https://mail.google.com/" },
     { nom: "Qwant", url: "https://www.qwant.com/" },
@@ -49,6 +57,14 @@
         "radial-gradient(800px 500px at 80% 10%, rgba(255,130,200,.28), transparent 60%)," +
         "linear-gradient(135deg, #1a2a3a, #0d1117)";
     }
+  }
+
+  function toggleMenu(menu, btn, forceOpen){
+    if(!menu || !btn) return;
+    const shouldOpen = typeof forceOpen === "boolean" ? forceOpen : !menu.classList.contains("ouvert");
+    menu.classList.toggle("ouvert", shouldOpen);
+    menu.setAttribute("aria-hidden", shouldOpen ? "false" : "true");
+    btn.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
   }
 
   appliquerFond(window.Stockage.get("fond", null));
@@ -109,27 +125,19 @@
         a.href = f.url;
         a.target = "_blank";
         a.rel = "noopener";
+        a.title = f.nom || f.url;
 
         const img = document.createElement("img");
-        img.alt = "";
+        img.alt = f.nom || "Favori";
         img.src = urlFavicon(f.url);
 
-        const nom = document.createElement("div");
-        nom.className = "nom";
-        nom.textContent = f.nom || domaineDepuisUrl(f.url) || f.url;
-
         a.appendChild(img);
-        a.appendChild(nom);
         favorisGrille.appendChild(a);
       }
 
       if(favorisListe){
         const ligne = document.createElement("div");
         ligne.className = "favori-ligne";
-
-        const img = document.createElement("img");
-        img.alt = "";
-        img.src = urlFavicon(f.url);
 
         const nom = document.createElement("div");
         nom.className = "favori-nom";
@@ -145,7 +153,6 @@
           rendreFavoris();
         });
 
-        ligne.appendChild(img);
         ligne.appendChild(nom);
         ligne.appendChild(suppr);
         favorisListe.appendChild(ligne);
@@ -179,4 +186,10 @@
     window.Stockage.clear();
     location.reload();
   });
+
+  favorisMenuBtn?.addEventListener("click", ()=>toggleMenu(favorisMenu, favorisMenuBtn));
+  favorisMenuFermer?.addEventListener("click", ()=>toggleMenu(favorisMenu, favorisMenuBtn, false));
+
+  reglagesMenuBtn?.addEventListener("click", ()=>toggleMenu(reglagesMenu, reglagesMenuBtn));
+  reglagesMenuFermer?.addEventListener("click", ()=>toggleMenu(reglagesMenu, reglagesMenuBtn, false));
 })();
